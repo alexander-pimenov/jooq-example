@@ -18,6 +18,12 @@ target/
 *.iws
 *.iml
 *.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
 
 ### NetBeans ###
 /nbproject/private/
@@ -29,3 +35,12 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Giga IDE ###
+.gigaide
+.gigaide/
+
+.gradle
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
