@@ -1,0 +1,15 @@
+# src/main/resources/db/changelog/db.changelog-master.yaml
+databaseChangeLog:
+  # Включаем все SQL файлы миграции, отсортированные по порядку
+  - include:
+      file: db/migration/001-create-countries.sql
+      relativeToChangelogFile: false
+  - include:
+      file: db/migration/002-insert-countries.sql
+      relativeToChangelogFile: false
+  - include:
+      file: db/migration/003-create-cities.sql
+      relativeToChangelogFile: false
+  - include:
+      file: db/migration/004-insert-cities.sql
+      relativeToChangelogFile: false

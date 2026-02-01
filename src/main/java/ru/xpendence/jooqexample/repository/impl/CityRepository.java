@@ -51,6 +51,12 @@ public class CityRepository implements CrudRepository<City> {
 
     @Override
     public List<City> findAll(Condition condition) {
+        if (condition == null) {
+            return dsl.selectFrom(Cities.CITIES)
+                    .fetch()
+                    .into(City.class);
+        }
+
         return dsl.selectFrom(Cities.CITIES)
                 .where(condition)
                 .fetch()

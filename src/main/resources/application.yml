@@ -1,7 +1,15 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/jooq_db
+    url: jdbc:postgresql://localhost:6432/jooq_db
     username: jooq_user
     password: jooq_password
     continue-on-error: true
+  liquibase:
+    enabled: true
+    change-log: classpath:/db/changelog/db.changelog-master.yaml
+    default-schema: public
+    # Опциональные настройки:
+#    drop-first: false  # ОПАСНО: удаляет всю БД!
+#    contexts: development
+#    labels: "!test"    # не применять в тестах

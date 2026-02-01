@@ -1,4 +1,4 @@
-create table countries
+create table if not exists countries
 (
     id              bigserial primary key,
     name            varchar(255),

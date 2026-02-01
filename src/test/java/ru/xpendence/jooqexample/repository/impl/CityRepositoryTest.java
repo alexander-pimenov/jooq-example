@@ -1,5 +1,6 @@
 package ru.xpendence.jooqexample.repository.impl;
 
+import org.jooq.Condition;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.xpendence.jooqexample.JooqExampleApplicationTests;
@@ -38,6 +39,7 @@ class CityRepositoryTest extends JooqExampleApplicationTests {
 
     @Test
     void findAll() {
+        repository.findAll(null).forEach(System.out::println);
     }
 
     @Test

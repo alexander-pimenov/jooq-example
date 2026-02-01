@@ -5,9 +5,10 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.2.4.RELEASE</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <version>3.3.3</version>
+        <relativePath/>
     </parent>
+
     <groupId>ru.xpendence</groupId>
     <artifactId>jooq-example</artifactId>
     <version>0.0.1-SNAPSHOT</version>
@@ -15,17 +16,17 @@
     <description>Demo project for Jooq</description>
 
     <properties>
-        <java.version>11</java.version>
-        <jooq.version>3.12.4</jooq.version>
+        <java.version>21</java.version>
+        <!-- Spring Boot 3.5.10 использует JOOQ 3.19.x -->
+        <!-- Удалите это свойство, Spring Boot управляет версией -->
+        <!-- <jooq.version>3.19.15</jooq.version> -->
         <db.driver>org.postgresql.Driver</db.driver>
-        <db.url>jdbc:postgresql://localhost:5432/jooq_db</db.url>
+        <db.url>jdbc:postgresql://localhost:6432/jooq_db</db.url>
         <db.username>jooq_user</db.username>
         <db.password>jooq_password</db.password>
-        <commons.lang3.version>3.9</commons.lang3.version>
     </properties>
 
     <dependencies>
-
         <!-- Spring Starters -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -37,9 +38,15 @@
         </dependency>
 
         <!-- Database -->
+<!--        <dependency>-->
+<!--            <groupId>org.flywaydb</groupId>-->
+<!--            <artifactId>flyway-core</artifactId>-->
+<!--        </dependency>-->
+
+        <!-- Удалите flyway-core, если он есть -->
         <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-core</artifactId>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -51,7 +58,6 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>${commons.lang3.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -59,53 +65,43 @@
             <optional>true</optional>
         </dependency>
 
-        <!--Test -->
+        <!-- Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.junit.vintage</groupId>
-                    <artifactId>junit-vintage-engine</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <!-- JOOQ Generator -->
-        <dependency>
-            <groupId>org.jooq</groupId>
-            <artifactId>jooq</artifactId>
-            <version>${jooq.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.jooq</groupId>
-            <artifactId>jooq-meta</artifactId>
-            <version>${jooq.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jooq</groupId>
-            <artifactId>jooq-codegen</artifactId>
-            <version>${jooq.version}</version>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
-
-            <!-- Хрен знает, что за плагин -->
+            <!-- Spring Boot плагин для упаковки приложения -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
             </plugin>
 
-            <!-- JOOQ Generator Plugin -->
+            <!-- JOOQ Generator Plugin - БЕЗ Flyway в основном билде, пока не разобрался с Flyway -->
             <plugin>
                 <groupId>org.jooq</groupId>
                 <artifactId>jooq-codegen-maven</artifactId>
-                <version>${jooq.version}</version>
+                <version>3.19.11</version>
                 <executions>
                     <execution>
+                        <id>generate-sources</id>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>generate</goal>
@@ -121,18 +117,22 @@
                     </jdbc>
                     <generator>
                         <database>
+                            <name>org.jooq.meta.postgres.PostgresDatabase</name>
                             <includes>.*</includes>
-                            <excludes>
-                                flyway_schema_history
-                            </excludes>
+<!--                            <excludes>flyway_schema_history</excludes>-->
                             <inputSchema>public</inputSchema>
                         </database>
                         <generate>
+                            <daos>true</daos>
                             <records>true</records>
+                            <fluentSetters>true</fluentSetters>
+                            <javaTimeTypes>true</javaTimeTypes>
                         </generate>
                         <target>
                             <packageName>ru.xpendence.jooqexample.domain</packageName>
-                            <directory>target/generated-sources/jooq</directory>
+                            <!-- ГЕНЕРАЦИЯ В SRC -->
+                            <directory>src/main/java</directory>
+<!--                            <directory>target/generated-sources/jooq</directory>-->
                         </target>
                     </generator>
                 </configuration>
@@ -140,4 +140,32 @@
         </plugins>
     </build>
 
+<!--    <profiles>-->
+<!--        <profile>-->
+<!--            <id>generate-jooq</id>-->
+<!--            <build>-->
+<!--                <plugins>-->
+<!--                    &lt;!&ndash; Flyway плагин ТОЛЬКО в профиле &ndash;&gt;-->
+<!--                    <plugin>-->
+<!--                        <groupId>org.flywaydb</groupId>-->
+<!--                        <artifactId>flyway-maven-plugin</artifactId>-->
+<!--                        <configuration>-->
+<!--                            <url>${db.url}</url>-->
+<!--                            <user>${db.username}</user>-->
+<!--                            <password>${db.password}</password>-->
+<!--                        </configuration>-->
+<!--                        <executions>-->
+<!--                            <execution>-->
+<!--                                <id>migrate-database</id>-->
+<!--                                <phase>generate-sources</phase>-->
+<!--                                <goals>-->
+<!--                                    <goal>migrate</goal>-->
+<!--                                </goals>-->
+<!--                            </execution>-->
+<!--                        </executions>-->
+<!--                    </plugin>-->
+<!--                </plugins>-->
+<!--            </build>-->
+<!--        </profile>-->
+<!--    </profiles>-->
 </project>
