@@ -48,6 +48,6 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-
-src/main/java/ru/xpendence/jooqexample/domain/
-!src/main/java/ru/xpendence/jooqexample/domain/.gitkeep
+### сгенерированные JOOQ-ом классы хочу всё же запушить
+# src/main/java/ru/xpendence/jooqexample/domain/
+# !src/main/java/ru/xpendence/jooqexample/domain/.gitkeep
